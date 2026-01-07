@@ -5,7 +5,7 @@ import { getProducts, getDashboardStats, getSetting, getVisitorCount, getRecentO
 import { AdminProductsContent } from "@/components/admin/products-content"
 
 export default async function AdminPage() {
-    const [products, stats, shopName, visitorCount, lowStockThreshold, recentOrders, checkinReward] = await Promise.all([
+    const [products, stats, shopName, visitorCount, lowStockThreshold, recentOrders, checkinReward, checkinEnabled] = await Promise.all([
         getProducts(),
         getDashboardStats(),
         (async () => {
@@ -46,6 +46,14 @@ export default async function AdminPage() {
                 return 10
             }
         })(),
+        (async () => {
+            try {
+                const v = await getSetting('checkin_enabled')
+                return v !== 'false' // Default to true
+            } catch {
+                return true
+            }
+        })(),
     ])
 
     return (
@@ -73,6 +81,7 @@ export default async function AdminPage() {
                 createdAt: o.createdAt
             }))}
             checkinReward={checkinReward}
+            checkinEnabled={checkinEnabled}
         />
     )
 }

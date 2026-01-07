@@ -217,7 +217,15 @@ export async function saveCheckinReward(raw: string) {
     const n = Number.parseInt(String(raw || '').trim(), 10)
     const value = Number.isFinite(n) && n > 0 ? String(n) : '10'
     await setSetting('checkin_reward', value)
+    await setSetting('checkin_reward', value)
     revalidatePath('/admin')
+}
+
+export async function saveCheckinEnabled(enabled: boolean) {
+    await checkAdmin()
+    await setSetting('checkin_enabled', enabled ? 'true' : 'false')
+    revalidatePath('/admin')
+    revalidatePath('/')
 }
 
 async function ensureCategoriesTable() {

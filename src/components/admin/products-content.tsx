@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Eye, EyeOff, ArrowUp, ArrowDown, TrendingUp, ShoppingCart, CreditCard, Package, Users } from "lucide-react"
-import { deleteProduct, toggleProductStatus, reorderProduct, saveShopName, saveLowStockThreshold, saveCheckinReward } from "@/actions/admin"
+import { deleteProduct, toggleProductStatus, reorderProduct, saveShopName, saveLowStockThreshold, saveCheckinReward, saveCheckinEnabled } from "@/actions/admin"
 import { toast } from "sonner"
 
 interface Product {
@@ -40,9 +40,10 @@ interface AdminProductsContentProps {
     lowStockThreshold: number
     checkinReward: number
     recentOrders: Array<{ orderId: string; productName: string; amount: string; status: string; createdAt: Date | null }>
+    checkinEnabled: boolean
 }
 
-export function AdminProductsContent({ products, stats, shopName, visitorCount, lowStockThreshold, checkinReward, recentOrders }: AdminProductsContentProps) {
+export function AdminProductsContent({ products, stats, shopName, visitorCount, lowStockThreshold, checkinReward, recentOrders, checkinEnabled }: AdminProductsContentProps) {
     const { t } = useI18n()
     const [shopNameValue, setShopNameValue] = useState(shopName || '')
     const [savingShopName, setSavingShopName] = useState(false)
@@ -50,6 +51,8 @@ export function AdminProductsContent({ products, stats, shopName, visitorCount, 
     const [savingThreshold, setSavingThreshold] = useState(false)
     const [rewardValue, setRewardValue] = useState(String(checkinReward || 10))
     const [savingReward, setSavingReward] = useState(false)
+    const [enabledCheckin, setEnabledCheckin] = useState(checkinEnabled)
+    const [savingEnabled, setSavingEnabled] = useState(false)
 
     const lowStockCount = useMemo(() => {
         const threshold = Number.parseInt(thresholdValue, 10) || 5
@@ -137,6 +140,19 @@ export function AdminProductsContent({ products, stats, shopName, visitorCount, 
         }
     }
 
+    const handleToggleCheckin = async (checked: boolean) => {
+        setSavingEnabled(true)
+        try {
+            await saveCheckinEnabled(checked)
+            setEnabledCheckin(checked)
+            toast.success(t('common.success'))
+        } catch (e: any) {
+            toast.error(e.message)
+        } finally {
+            setSavingEnabled(false)
+        }
+    }
+
     return (
         <div className="space-y-6">
             {/* Shop Settings */}
@@ -171,20 +187,39 @@ export function AdminProductsContent({ products, stats, shopName, visitorCount, 
                                 {savingThreshold ? t('common.processing') : t('admin.settings.saveThreshold')}
                             </Button>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Input
-                                type="number"
-                                className="w-20"
-                                value={rewardValue}
-                                onChange={(e) => setRewardValue(e.target.value)}
-                                placeholder="10"
-                                title="Check-in Reward (Points)"
-                            />
-                            <Button variant="outline" onClick={handleSaveReward} disabled={savingReward}>
-                                {savingReward ? t('common.processing') : "Save Reward"}
-                            </Button>
+
+                        <div className="flex items-center gap-3 border-l pl-3 ml-2">
+                            <div className="flex items-center gap-2">
+                                <Label htmlFor="checkin-enable" className="cursor-pointer">Check-in</Label>
+                                <Button
+                                    id="checkin-enable"
+                                    variant={enabledCheckin ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleToggleCheckin(!enabledCheckin)}
+                                    disabled={savingEnabled}
+                                    className={enabledCheckin ? "bg-green-600 hover:bg-green-700" : ""}
+                                >
+                                    {enabledCheckin ? "Enabled" : "Disabled"}
+                                </Button>
+                            </div>
+                            {enabledCheckin && (
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        type="number"
+                                        className="w-20"
+                                        value={rewardValue}
+                                        onChange={(e) => setRewardValue(e.target.value)}
+                                        placeholder="10"
+                                        title="Check-in Reward (Points)"
+                                    />
+                                    <Button variant="outline" onClick={handleSaveReward} disabled={savingReward}>
+                                        {savingReward ? t('common.processing') : "Save Points"}
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
+
                     <p className="text-xs text-muted-foreground">{t('admin.settings.shopNameHint')}</p>
                 </CardContent>
             </Card>

@@ -8,7 +8,7 @@ import { Gift, Coins } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useI18n } from "@/lib/i18n/context"
 
-export function CheckInButton() {
+export function CheckInButton({ enabled = true }: { enabled?: boolean }) {
     const { t } = useI18n()
     const [points, setPoints] = useState(0)
     const [checkedIn, setCheckedIn] = useState(false)
@@ -62,7 +62,7 @@ export function CheckInButton() {
                 <span>{points}</span>
             </div>
 
-            {!checkedIn && (
+            {enabled && !checkedIn && (
                 <Button
                     variant="outline"
                     size="sm"

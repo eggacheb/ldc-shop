@@ -13,6 +13,12 @@ export async function checkIn() {
         return { success: false, error: "Not logged in" }
     }
 
+    // 0. Check if feature is enabled
+    const enabledStr = await getSetting('checkin_enabled')
+    if (enabledStr === 'false') {
+        return { success: false, error: "Check-in is currently disabled" }
+    }
+
     const userId = session.user.id
 
     try {
@@ -83,6 +89,11 @@ export async function getUserPoints() {
 export async function getCheckinStatus() {
     const session = await auth()
     if (!session?.user?.id) return { checkedIn: false }
+
+    const enabledStr = await getSetting('checkin_enabled')
+    if (enabledStr === 'false') {
+        return { checkedIn: false, disabled: true }
+    }
 
     try {
         const existing = await db.execute(sql`

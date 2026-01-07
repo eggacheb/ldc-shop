@@ -36,6 +36,14 @@ export async function SiteHeader() {
         shopNameOverride = null
     }
 
+    let checkinEnabled = true
+    try {
+        const v = await getSetting('checkin_enabled')
+        checkinEnabled = v !== 'false'
+    } catch {
+        checkinEnabled = true
+    }
+
     return (
         <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
             <div className="container flex h-16 items-center gap-3">
@@ -48,7 +56,7 @@ export async function SiteHeader() {
                 </div>
                 <div className="flex items-center justify-end gap-2 md:gap-3">
                     <nav className="flex items-center space-x-2">
-                        {user && <CheckInButton />}
+                        {user && <CheckInButton enabled={checkinEnabled} />}
                         <LanguageSwitcher />
                         {user ? (
                             <DropdownMenu>
