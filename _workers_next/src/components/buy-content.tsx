@@ -306,12 +306,12 @@ export function BuyContent({
                                     <div className="flex flex-wrap gap-2">
                                         <Badge
                                             variant={stockCount > 0 ? "outline" : "destructive"}
-                                            className={stockCount > 0 ? "rounded-full border-primary/30 bg-primary/5 px-3 text-primary" : "rounded-full px-3"}
+                                            className={stockCount > 0 ? "rounded-lg border-primary/25 bg-primary/5 px-3 py-1.5 text-primary font-medium" : "rounded-lg px-3 py-1.5 font-medium"}
                                         >
                                             {stockLabel}
                                         </Badge>
                                         {typeof product.purchaseLimit === 'number' && product.purchaseLimit > 0 && (
-                                            <Badge variant="secondary" className="rounded-full border border-border/45 bg-background/70 px-3">
+                                            <Badge variant="secondary" className="rounded-lg border border-border/40 bg-muted/40 px-3 py-1.5 font-medium">
                                                 {t('buy.purchaseLimit', { limit: product.purchaseLimit })}
                                             </Badge>
                                         )}
@@ -319,16 +319,16 @@ export function BuyContent({
                                 </div>
 
                                 {isLoggedIn && hasStock && (
-                                    <div className="rounded-[1.4rem] border border-border/35 bg-background/72 p-4">
-                                        <div className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                                    <div className="rounded-2xl border border-border/25 bg-muted/20 p-4">
+                                        <div className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
                                             {t('buy.modal.total')}
                                         </div>
                                         <div className="space-y-3">
-                                            <div className="flex items-center rounded-2xl border border-border bg-background/95">
+                                            <div className="flex items-center overflow-hidden rounded-xl border border-border/40 bg-background/95 shadow-sm">
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-11 w-11 rounded-none border-r border-border"
+                                                    className="h-12 w-12 shrink-0 rounded-none text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:opacity-40"
                                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                                     disabled={quantity <= 1}
                                                 >
@@ -339,42 +339,34 @@ export function BuyContent({
                                                     value={quantity}
                                                     onChange={(e) => {
                                                         const val = parseInt(e.target.value) || 1
-
-                                                        if (val >= 1 && val <= maxSelectableQuantity) {
-                                                            setQuantity(val)
-                                                        }
+                                                        if (val >= 1 && val <= maxSelectableQuantity) setQuantity(val)
                                                     }}
                                                     onBlur={(e) => {
                                                         let val = parseInt(e.target.value)
                                                         if (isNaN(val) || val < 1) val = 1
-
                                                         if (val > maxSelectableQuantity) {
                                                             val = maxSelectableQuantity
                                                             toast.error(t('buy.limitExceeded'))
                                                         }
-
                                                         setQuantity(val)
                                                     }}
-                                                    className="h-11 flex-1 rounded-none border-x-0 text-center text-base shadow-none focus-visible:ring-0"
+                                                    className="h-12 flex-1 rounded-none border-0 bg-transparent text-center text-base font-medium tabular-nums shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
                                                     min={1}
                                                     max={maxSelectableQuantity}
                                                 />
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-11 w-11 rounded-none border-l border-border"
-                                                    onClick={() => {
-                                                        if (quantity < maxSelectableQuantity) {
-                                                            setQuantity(quantity + 1)
-                                                        }
-                                                    }}
+                                                    className="h-12 w-12 shrink-0 rounded-none text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground disabled:opacity-40"
+                                                    onClick={() => quantity < maxSelectableQuantity && setQuantity(quantity + 1)}
                                                     disabled={quantity >= maxSelectableQuantity}
                                                 >
                                                     <Plus className="h-4 w-4" />
                                                 </Button>
                                             </div>
-                                            <div className="rounded-2xl border border-border/25 bg-muted/25 px-4 py-3 text-sm font-medium text-muted-foreground">
-                                                {t('buy.modal.total')}: <span className="font-semibold text-foreground">{(priceValue * quantity).toFixed(2)}</span>
+                                            <div className="flex items-center justify-between rounded-xl bg-background/60 px-4 py-3 text-sm">
+                                                <span className="text-muted-foreground">{t('buy.modal.total')}</span>
+                                                <span className="font-semibold tabular-nums text-foreground">{(priceValue * quantity).toFixed(2)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -386,24 +378,31 @@ export function BuyContent({
                                             product.purchaseWarning && !warningConfirmed ? (
                                                 <Dialog open={showWarningDialog} onOpenChange={setShowWarningDialog}>
                                                     <DialogTrigger asChild>
-                                                        <Button size="lg" className="h-12 w-full rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90">
+                                                        <Button
+                                                            size="lg"
+                                                            className="h-12 w-full rounded-xl bg-primary px-6 font-medium text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/25 active:scale-[0.99]"
+                                                        >
                                                             {t('common.buyNow')}
                                                         </Button>
                                                     </DialogTrigger>
-                                                    <DialogContent>
+                                                    <DialogContent className="rounded-2xl sm:max-w-md">
                                                         <DialogHeader>
-                                                            <DialogTitle className="flex items-center gap-2 text-amber-600">
-                                                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <DialogTitle className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                                                                <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                                                 </svg>
                                                                 {t('buy.warningTitle')}
                                                             </DialogTitle>
                                                         </DialogHeader>
-                                                        <div className="py-4 whitespace-pre-wrap text-sm">
+                                                        <div className="py-4 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
                                                             {product.purchaseWarning}
                                                         </div>
-                                                        <div className="flex justify-end gap-2">
-                                                            <Button variant="outline" onClick={() => setShowWarningDialog(false)}>
+                                                        <div className="flex justify-end gap-3">
+                                                            <Button
+                                                                variant="outline"
+                                                                className="rounded-xl"
+                                                                onClick={() => setShowWarningDialog(false)}
+                                                            >
                                                                 {t('common.cancel')}
                                                             </Button>
                                                             <Button
@@ -411,7 +410,7 @@ export function BuyContent({
                                                                     setWarningConfirmed(true)
                                                                     setShowWarningDialog(false)
                                                                 }}
-                                                                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                                                                className="rounded-xl bg-primary font-medium text-primary-foreground hover:bg-primary/90"
                                                             >
                                                                 {t('buy.confirmWarning')}
                                                             </Button>
@@ -429,20 +428,20 @@ export function BuyContent({
                                                 />
                                             )
                                         ) : lockedStockCount > 0 ? (
-                                            <div className="rounded-[1.4rem] border border-yellow-500/20 bg-yellow-500/8 px-4 py-4 text-yellow-700 dark:text-yellow-300">
+                                            <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-4 text-amber-800 dark:text-amber-200">
                                                 <div className="flex items-start gap-3">
-                                                    <svg className="mt-0.5 h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <svg className="mt-0.5 h-5 w-5 shrink-0 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    <p className="text-sm font-medium">
+                                                    <p className="text-sm font-medium leading-relaxed">
                                                         {t('buy.stockLockedMessage')}
                                                     </p>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="rounded-[1.4rem] border border-destructive/20 bg-destructive/6 px-4 py-4 text-destructive">
+                                            <div className="rounded-xl border border-destructive/15 bg-destructive/5 px-4 py-4 text-destructive">
                                                 <div className="flex items-center gap-3">
-                                                    <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <svg className="h-5 w-5 shrink-0 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                                     </svg>
                                                     <p className="font-medium">{t('buy.outOfStockMessage')}</p>
@@ -450,12 +449,12 @@ export function BuyContent({
                                             </div>
                                         )
                                     ) : (
-                                        <div className="rounded-[1.4rem] border border-border/35 bg-muted/35 px-4 py-4 text-muted-foreground">
+                                        <div className="rounded-xl border border-border/30 bg-muted/25 px-4 py-4 text-muted-foreground">
                                             <div className="flex items-center gap-3">
-                                                <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className="h-5 w-5 shrink-0 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                 </svg>
-                                                <p>{t('buy.loginToBuy')}</p>
+                                                <p className="text-sm font-medium">{t('buy.loginToBuy')}</p>
                                             </div>
                                         </div>
                                     )}
@@ -466,57 +465,58 @@ export function BuyContent({
                                         <Button
                                             type="button"
                                             variant="outline"
-                                            className="h-11 w-full rounded-2xl border-border/45"
+                                            className="h-11 w-full rounded-xl border-border/50 bg-background/50 font-medium transition-colors hover:bg-muted/50 hover:border-border"
                                         >
-                                            <Share2 className="mr-2 h-4 w-4" />
+                                            <Share2 className="mr-2 h-4 w-4 opacity-70" />
                                             {t('buy.share')}
                                         </Button>
                                     </DialogTrigger>
-                                        <DialogContent>
+                                        <DialogContent className="rounded-2xl sm:max-w-md">
                                             <DialogHeader>
                                                 <DialogTitle>{t('buy.shareTitle')}</DialogTitle>
                                                 <DialogDescription>{t('buy.shareDescription')}</DialogDescription>
                                             </DialogHeader>
-                                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                            <div className="grid grid-cols-2 gap-2">
                                                 {shareLinks?.x ? (
-                                                    <Button asChild variant="outline">
+                                                    <Button asChild variant="outline" className="rounded-xl">
                                                         <a href={shareLinks.x} target="_blank" rel="noopener noreferrer">X (Twitter)</a>
                                                     </Button>
                                                 ) : (
-                                                    <Button variant="outline" disabled>X (Twitter)</Button>
+                                                    <Button variant="outline" className="rounded-xl" disabled>X (Twitter)</Button>
                                                 )}
                                                 {shareLinks?.facebook ? (
-                                                    <Button asChild variant="outline">
+                                                    <Button asChild variant="outline" className="rounded-xl">
                                                         <a href={shareLinks.facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
                                                     </Button>
                                                 ) : (
-                                                    <Button variant="outline" disabled>Facebook</Button>
+                                                    <Button variant="outline" className="rounded-xl" disabled>Facebook</Button>
                                                 )}
                                                 {shareLinks?.telegram ? (
-                                                    <Button asChild variant="outline">
+                                                    <Button asChild variant="outline" className="rounded-xl">
                                                         <a href={shareLinks.telegram} target="_blank" rel="noopener noreferrer">Telegram</a>
                                                     </Button>
                                                 ) : (
-                                                    <Button variant="outline" disabled>Telegram</Button>
+                                                    <Button variant="outline" className="rounded-xl" disabled>Telegram</Button>
                                                 )}
                                                 {shareLinks?.whatsapp ? (
-                                                    <Button asChild variant="outline">
+                                                    <Button asChild variant="outline" className="rounded-xl">
                                                         <a href={shareLinks.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp</a>
                                                     </Button>
                                                 ) : (
-                                                    <Button variant="outline" disabled>WhatsApp</Button>
+                                                    <Button variant="outline" className="rounded-xl" disabled>WhatsApp</Button>
                                                 )}
                                                 {shareLinks?.line ? (
-                                                    <Button asChild variant="outline">
+                                                    <Button asChild variant="outline" className="rounded-xl col-span-2">
                                                         <a href={shareLinks.line} target="_blank" rel="noopener noreferrer">Line</a>
                                                     </Button>
                                                 ) : (
-                                                    <Button variant="outline" disabled>Line</Button>
+                                                    <Button variant="outline" className="rounded-xl col-span-2" disabled>Line</Button>
                                                 )}
                                             </div>
                                             <Button
                                                 type="button"
                                                 variant="secondary"
+                                                className="rounded-xl"
                                                 onClick={handleCopyLink}
                                                 disabled={!shareUrl}
                                             >
@@ -525,7 +525,7 @@ export function BuyContent({
                                         </DialogContent>
                                 </Dialog>
 
-                                <div className="rounded-[1.3rem] border border-border/20 bg-muted/16 px-4 py-3 text-xs leading-6 text-muted-foreground">
+                                <div className="rounded-xl border border-border/20 bg-muted/10 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
                                     {t('buy.paymentTimeoutNotice')}
                                 </div>
                             </CardContent>
@@ -549,8 +549,8 @@ export function BuyContent({
                     </CardHeader>
                     <CardContent className="space-y-6 pt-6">
                         {canReviewState && reviewOrderIdState && (
-                            <div className="rounded-[1.4rem] border border-border/35 bg-muted/20 p-4">
-                                <h3 className="mb-3 text-sm font-medium">{t('review.leaveReview')}</h3>
+                            <div className="rounded-xl border border-border/30 bg-muted/15 p-5">
+                                <h3 className="mb-3 text-sm font-semibold text-foreground">{t('review.leaveReview')}</h3>
                                 <ReviewForm
                                     productId={product.id}
                                     orderId={reviewOrderIdState}
